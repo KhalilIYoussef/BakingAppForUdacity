@@ -10,13 +10,9 @@ public class RecipeContract
     private static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final Uri RECIPE_CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_RECIPE).build();
 
-    public static Uri buildRecipeUriWithId(int id)
+// the first table
+    public static final class RecipeEntry implements BaseColumns
     {
-        return RECIPE_CONTENT_URI.buildUpon().appendPath(Integer.toString(id)).build();
-    }
-
-    public static final class RecipeEntry implements BaseColumns {
-
         public static final String COLUMN_RECIPE_NAME = "recipe_name";
         public static final String COLUMN_RECIPE_ID = "recipe_id";
         public static final String COLUMN_INGREDIENT_NAME = "ingredient_name";

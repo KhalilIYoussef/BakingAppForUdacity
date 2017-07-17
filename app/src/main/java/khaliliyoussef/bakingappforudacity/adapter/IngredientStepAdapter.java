@@ -46,36 +46,37 @@ public class IngredientStepAdapter extends RecyclerView.Adapter<IngredientStepAd
     }
 
     @Override
-    public int getItemCount() {
+    public int getItemCount()
+    {
         if (mRecipe == null)
             return 0;
         return mRecipe.getSteps().size() + 1;
     }
 
-    public interface OnIngredientStepListener {
+    public interface OnIngredientStepListener
+    {
         void onIngredientStepSelected(int position);
     }
 
-    class IngredientStepViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class IngredientStepViewHolder extends RecyclerView.ViewHolder  {
 
 
-        @BindView(R.id.tv_ingredient_step)
-        TextView mIngredientStep;
+        @BindView(R.id.tv_ingredient_step) TextView mIngredientStep;
 
         public IngredientStepViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            itemView.setOnClickListener(this);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mClickListener.onIngredientStepSelected(getAdapterPosition());
+                }
+            });
         }
 
         void setIngredientStep(String ingredientStep) {
             mIngredientStep.setText(ingredientStep);
         }
 
-        @Override
-        public void onClick(View v) {
-            mClickListener.onIngredientStepSelected(getAdapterPosition());
-
-        }
     }
 }

@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         tools:layout="@layout/fragment_master_list" />
 
-    <!-- butting a small line in between -->
+    <!-- butting a small line in between View divider  -->
     <View
         android:layout_width="1dp"
         android:layout_height="match_parent"

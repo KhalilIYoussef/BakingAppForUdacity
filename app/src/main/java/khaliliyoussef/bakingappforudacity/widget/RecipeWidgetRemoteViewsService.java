@@ -1,5 +1,4 @@
 package khaliliyoussef.bakingappforudacity.widget;
-
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Binder;
@@ -8,10 +7,15 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import khaliliyoussef.bakingappforudacity.R;
-import khaliliyoussef.bakingappforudacity.data.RecipeContract.*;
 
 import static khaliliyoussef.bakingappforudacity.data.RecipeContract.RECIPE_CONTENT_URI;
+import static khaliliyoussef.bakingappforudacity.data.RecipeContract.RecipeEntry.COLUMN_INGREDIENT_MEASURE;
+import static khaliliyoussef.bakingappforudacity.data.RecipeContract.RecipeEntry.COLUMN_INGREDIENT_NAME;
+import static khaliliyoussef.bakingappforudacity.data.RecipeContract.RecipeEntry.COLUMN_INGREDIENT_QUANTITY;
+import static khaliliyoussef.bakingappforudacity.data.RecipeContract.RecipeEntry.COLUMN_RECIPE_ID;
+import static khaliliyoussef.bakingappforudacity.data.RecipeContract.RecipeEntry.COLUMN_RECIPE_NAME;
 
+// a class that extend RemoteViewsServices must implement onGetViewFactory
 public class RecipeWidgetRemoteViewsService extends RemoteViewsService {
     // these indices must match the projection
     static final int INDEX_RECIPE_ID = 0;
@@ -19,14 +23,18 @@ public class RecipeWidgetRemoteViewsService extends RemoteViewsService {
     static final int INDEX_INGREDIENT_NAME = 2;
     static final int INDEX_INGREDIENT_MEASURE = 3;
     static final int INDEX_INGREDIENT_QUANTITY = 4;
-    private static final String[] RECIPE_COLUMNS = {
-            RecipeEntry.COLUMN_RECIPE_ID,
-            RecipeEntry.COLUMN_RECIPE_NAME,
-            RecipeEntry.COLUMN_INGREDIENT_NAME,
-            RecipeEntry.COLUMN_INGREDIENT_MEASURE,
-            RecipeEntry.COLUMN_INGREDIENT_QUANTITY
-    };
+    private static final String[] RECIPE_COLUMNS =
+            {
+            COLUMN_RECIPE_ID,
+            COLUMN_RECIPE_NAME,
+            COLUMN_INGREDIENT_NAME,
+            COLUMN_INGREDIENT_MEASURE,
+            COLUMN_INGREDIENT_QUANTITY
+            };
 
+
+
+            //take an Intent as it's parameter
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent)
     {
@@ -47,6 +55,7 @@ public class RecipeWidgetRemoteViewsService extends RemoteViewsService {
                 }
 
                 final long identityToken = Binder.clearCallingIdentity();
+                //get all the recipes from the CP
                 data = getContentResolver().query(RECIPE_CONTENT_URI,
                         RECIPE_COLUMNS,
                         null,
@@ -93,19 +102,22 @@ public class RecipeWidgetRemoteViewsService extends RemoteViewsService {
             }
 
             @Override
-            public int getViewTypeCount() {
+            public int getViewTypeCount()
+            {
                 return 1;
             }
 
             @Override
-            public long getItemId(int position) {
+            public long getItemId(int position)
+            {
                 if (data.moveToPosition(position))
                     return data.getLong(INDEX_RECIPE_ID);
                 return position;
             }
 
             @Override
-            public boolean hasStableIds() {
+            public boolean hasStableIds()
+            {
                 return true;
             }
         };

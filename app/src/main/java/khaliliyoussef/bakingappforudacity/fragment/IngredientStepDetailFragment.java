@@ -1,10 +1,11 @@
 package khaliliyoussef.bakingappforudacity.fragment;
 
-import android.annotation.SuppressLint;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -44,6 +45,8 @@ import com.google.android.exoplayer2.util.Util;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import khaliliyoussef.bakingappforudacity.R;
 import khaliliyoussef.bakingappforudacity.adapter.IngredientListAdapter;
 import khaliliyoussef.bakingappforudacity.model.Ingredient;
@@ -51,37 +54,40 @@ import khaliliyoussef.bakingappforudacity.model.Step;
 
 import static khaliliyoussef.bakingappforudacity.adapter.IngredientStepAdapter.INGREDIENTS;
 import static khaliliyoussef.bakingappforudacity.adapter.IngredientStepAdapter.STEPS;
-import static khaliliyoussef.bakingappforudacity.activity.IngredientStepActivity.PANES;
+import static khaliliyoussef.bakingappforudacity.activity.IngredientStepActivity.isTabKey;
 import static khaliliyoussef.bakingappforudacity.activity.IngredientStepActivity.POSITION;
 
 
-public class IngredientStepDetailFragment extends Fragment implements View.OnClickListener, ExoPlayer.EventListener {
+public class IngredientStepDetailFragment extends Fragment implements ExoPlayer.EventListener {
 
     public static final String AUTOPLAY = "autoplay";
     public static final String CURRENT_WINDOW_INDEX = "current_window_index";
     public static final String PLAYBACK_POSITION = "playback_position";
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
-    private final String TAG = IngredientStepDetailFragment.class.getSimpleName();
+    //set it to false at first time running
     private boolean autoPlay = false;
     private int currentWindow;
     private long playbackPosition;
     private TrackSelector trackSelector;
-    private RecyclerView mIngredientsRecyclerView;
-    private SimpleExoPlayerView mPlayerView;
+    
+
+    @BindView(R.id.rv_ingredients) RecyclerView mIngredientsRecyclerView;
+    @BindView(R.id.step_video) SimpleExoPlayerView mPlayerView;
+    @BindView(R.id.tv_description) TextView mDescription;
+    @BindView(R.id.bt_previous) Button mPrevious;
+    @BindView(R.id.bt_next) Button mNext;
+    @BindView(R.id.step_detail_view) View mStepDetail;
     private SimpleExoPlayer mExoPlayer;
-    private TextView mDescription;
-    private Button mPrevious;
-    private Button mNext;
-    private View mStepDetail;
     private ArrayList<Ingredient> mIngredients;
     private ArrayList<Step> mSteps;
     private int mIndex;
     private int mPosition;
-    private boolean mTwoPane;
+    private boolean isTablet;
 
 
     public IngredientStepDetailFragment() {
     }
+
 
     @Nullable
     @Override
@@ -90,58 +96,108 @@ public class IngredientStepDetailFragment extends Fragment implements View.OnCli
         if (savedInstanceState != null) {
             mIngredients = savedInstanceState.getParcelableArrayList(INGREDIENTS);
             mSteps = savedInstanceState.getParcelableArrayList(STEPS);
-            mTwoPane = savedInstanceState.getBoolean(PANES);
+            isTablet = savedInstanceState.getBoolean(isTabKey);
             mPosition = savedInstanceState.getInt(POSITION);
+
             playbackPosition = savedInstanceState.getLong(PLAYBACK_POSITION, 0);
+
             currentWindow = savedInstanceState.getInt(CURRENT_WINDOW_INDEX, 0);
             autoPlay = savedInstanceState.getBoolean(AUTOPLAY, false);
         }
 
         View rootView = inflater.inflate(R.layout.fragment_ingredient_step_detail, container, false);
+        ButterKnife.bind(this,rootView);
 
-        mIngredientsRecyclerView = (RecyclerView) rootView.findViewById(R.id.rv_ingredients);
-        mStepDetail = rootView.findViewById(R.id.step_detail_view);
-        mDescription = (TextView) rootView.findViewById(R.id.tv_description);
-        mPlayerView = (SimpleExoPlayerView) rootView.findViewById(R.id.sepv_step_video);
-        mPrevious = (Button) rootView.findViewById(R.id.bt_previous);
-        mNext = (Button) rootView.findViewById(R.id.bt_next);
 
-        mPrevious.setOnClickListener(this);
-        mNext.setOnClickListener(this);
+        mPrevious.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //clicking the previous button
+
+                if (mIndex > 0)
+                {
+                    int index = --mIndex;
+                    mDescription.setText(mSteps.get(index).getDescription());
+                    playStepVideo(index);
+                } else {
+                    Toast.makeText(getActivity(), R.string.start_of_steps, Toast.LENGTH_LONG).show();
+                }
+
+
+            }
+        });
+        mNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //clicking the next button
+                if (mIndex < mSteps.size() - 1)
+                {
+                    int index = ++mIndex;
+                    mDescription.setText(mSteps.get(index).getDescription());
+                    playStepVideo(index);
+                } else {
+
+                    Toast.makeText(getActivity(), R.string.end_of_steps, Toast.LENGTH_LONG).show();
+                }
+
+            }
+        });
 
         mPosition = getArguments().getInt(POSITION);
         mIndex = mPosition - 1;
-        mTwoPane = getArguments().getBoolean(PANES);
+        isTablet = getArguments().getBoolean(isTabKey);
 
 
         return rootView;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void onResume() {
         super.onResume();
+        //Case #1
+        if (isTablet && mPosition == 0) {
+            //it's a tablet ad he clicked the ingredients
+            //#hide the details
+            mStepDetail.setVisibility(View.GONE);
+            //show the ingredients
+            mIngredientsRecyclerView.setVisibility(View.VISIBLE);
 
-        if (mTwoPane && mPosition == 0) {
-            showIngredients();
-        } else if (mTwoPane) {
+            mIngredients = getArguments().getParcelableArrayList(INGREDIENTS);
+            IngredientListAdapter adapter = new IngredientListAdapter(mIngredients);
+            DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mIngredientsRecyclerView.getContext(),
+                    LinearLayoutManager.VERTICAL);
+            mIngredientsRecyclerView.addItemDecoration(dividerItemDecoration);
+            mIngredientsRecyclerView.setHasFixedSize(true);
+            mIngredientsRecyclerView.setAdapter(adapter);
+        }
+        //Case #2
+        else if (isTablet)
+        {
             showStepsForTab();
-        } else if (mPosition == 0) {
-            showIngredients();
-        } else {
+        }
+        //Case #3
+        else if (mPosition == 0)
+        {
+            mStepDetail.setVisibility(View.GONE);
+            mIngredientsRecyclerView.setVisibility(View.VISIBLE);
+            mIngredients = getArguments().getParcelableArrayList(INGREDIENTS);
+            IngredientListAdapter adapter = new IngredientListAdapter(mIngredients);
+            DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mIngredientsRecyclerView.getContext(),
+                    LinearLayoutManager.VERTICAL);
+            mIngredientsRecyclerView.addItemDecoration(dividerItemDecoration);
+            mIngredientsRecyclerView.setHasFixedSize(true);
+            mIngredientsRecyclerView.setAdapter(adapter);
+        }
+        //Case #4
+        else
+        {
             showStepsForPhone();
         }
     }
 
     private void showIngredients() {
-        mStepDetail.setVisibility(View.GONE);
-        mIngredientsRecyclerView.setVisibility(View.VISIBLE);
-        mIngredients = getArguments().getParcelableArrayList(INGREDIENTS);
-        IngredientListAdapter adapter = new IngredientListAdapter(mIngredients);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mIngredientsRecyclerView.getContext(),
-                LinearLayoutManager.VERTICAL);
-        mIngredientsRecyclerView.addItemDecoration(dividerItemDecoration);
-        mIngredientsRecyclerView.setHasFixedSize(true);
-        mIngredientsRecyclerView.setAdapter(adapter);
+
     }
 
 
@@ -171,12 +227,15 @@ public class IngredientStepDetailFragment extends Fragment implements View.OnCli
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     void isLandscape() {
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
             hideSystemUi();
     }
 
-    private void showStepsForPhone() {
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    private void showStepsForPhone()
+    {
         showStepsForTab();
         isLandscape();
         mPrevious.setVisibility(View.VISIBLE);
@@ -185,8 +244,8 @@ public class IngredientStepDetailFragment extends Fragment implements View.OnCli
 
     /**
      * Initialize ExoPlayer.
-     *
      * @param mediaUri The URI of the sample to play.
+     * where the Uri is the link of the video
      */
     private void initializePlayer(Uri mediaUri) {
         mExoPlayer = null;
@@ -227,17 +286,14 @@ public class IngredientStepDetailFragment extends Fragment implements View.OnCli
         releasePlayer();
     }
 
+    //i guess this is better that onStop()
     @Override
-    public void onPause() {
+    public void onPause()
+    {
         super.onPause();
         releasePlayer();
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        releasePlayer();
-    }
 
     /**
      * Release ExoPlayer.
@@ -250,31 +306,7 @@ public class IngredientStepDetailFragment extends Fragment implements View.OnCli
         }
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.bt_next:
-                if (mIndex < mSteps.size() - 1) {
-                    int index = ++mIndex;
-                    mDescription.setText(mSteps.get(index).getDescription());
-                    playStepVideo(index);
-                } else {
-                    Toast.makeText(getActivity(), R.string.end_of_steps, Toast.LENGTH_LONG).show();
-                }
-                break;
-            case R.id.bt_previous:
-                if (mIndex > 0) {
-                    int index = --mIndex;
-                    mDescription.setText(mSteps.get(index).getDescription());
-                    playStepVideo(index);
-                } else {
-                    Toast.makeText(getActivity(), R.string.start_of_steps, Toast.LENGTH_LONG).show();
-                }
-                break;
-        }
-    }
-
-    @SuppressLint("InlinedApi")
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void hideSystemUi() {
         View decorView = getActivity().getWindow().getDecorView();
         decorView.setSystemUiVisibility(
@@ -297,14 +329,17 @@ public class IngredientStepDetailFragment extends Fragment implements View.OnCli
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        if (mExoPlayer != null) {
+        if (mExoPlayer != null)
+        {
+            //this is because if you rotated the screen while it's playing
             outState.putLong(PLAYBACK_POSITION, playbackPosition);
+
             outState.putInt(CURRENT_WINDOW_INDEX, currentWindow);
             outState.putBoolean(AUTOPLAY, autoPlay);
         }
         outState.putParcelableArrayList(INGREDIENTS, mIngredients);
         outState.putParcelableArrayList(STEPS, mSteps);
-        outState.putBoolean(PANES, mTwoPane);
+        outState.putBoolean(isTabKey, isTablet);
         outState.putInt(POSITION, mPosition);
 
     }
@@ -319,40 +354,38 @@ public class IngredientStepDetailFragment extends Fragment implements View.OnCli
     }
 
     @Override
-    public void onLoadingChanged(boolean isLoading) {
+    public void onLoadingChanged(boolean isLoading)
+    {
     }
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
         if ((playbackState == ExoPlayer.STATE_READY) && playWhenReady) {
             Toast.makeText(getActivity(), "Playing", Toast.LENGTH_LONG).show();
-        } else if ((playbackState == ExoPlayer.STATE_READY)) {
-
         }
     }
 
     @Override
     public void onPlayerError(ExoPlaybackException e) {
         String errorString = null;
-        if (e.type == ExoPlaybackException.TYPE_RENDERER) {
+        if (e.type == ExoPlaybackException.TYPE_RENDERER)
+        {
             Exception cause = e.getRendererException();
             if (cause instanceof MediaCodecRenderer.DecoderInitializationException) {
                 // Special case for decoder initialization failures.
                 MediaCodecRenderer.DecoderInitializationException decoderInitializationException =
                         (MediaCodecRenderer.DecoderInitializationException) cause;
-                if (decoderInitializationException.decoderName == null) {
+                if (decoderInitializationException.decoderName == null)
+                {
                     if (decoderInitializationException.getCause() instanceof MediaCodecUtil.DecoderQueryException) {
                         errorString = getString(R.string.error_querying_decoders);
                     } else if (decoderInitializationException.secureDecoderRequired) {
-                        errorString = getString(R.string.error_no_secure_decoder,
-                                decoderInitializationException.mimeType);
+                        errorString = getString(R.string.error_no_secure_decoder);
                     } else {
-                        errorString = getString(R.string.error_no_decoder,
-                                decoderInitializationException.mimeType);
+                        errorString = getString(R.string.error_no_decoder);
                     }
                 } else {
-                    errorString = getString(R.string.error_instantiating_decoder,
-                            decoderInitializationException.decoderName);
+                    errorString = getString(R.string.error_instantiating_decoder);
                 }
             }
         }

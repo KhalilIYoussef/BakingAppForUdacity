@@ -11,6 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <!--the Main Activity -->
         <activity android:name=".activity.RecipeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,8 +28,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.RecipeActivity" />
         </activity>
-        <activity android:name=".activity.IngredientStepDetailActivity" />
+        <activity android:name=".activity.IngredientStepDetailActivity"
 
+           />
+<!--notice it's false for some security issues -->
         <provider
             android:name=".data.RecipeProvider"
             android:authorities="khaliliyoussef.bakingappforudacity.data"

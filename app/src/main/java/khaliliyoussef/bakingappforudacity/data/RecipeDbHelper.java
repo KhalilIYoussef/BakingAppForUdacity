@@ -31,8 +31,9 @@ public final class RecipeDbHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + RecipeEntry.RECIPE_TABLE);
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
+    {
+        db.execSQL("ALTER TABLE IF EXISTS " + RecipeEntry.RECIPE_TABLE);
         onCreate(db);
     }
 }

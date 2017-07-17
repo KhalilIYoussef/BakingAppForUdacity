@@ -15,7 +15,8 @@
         android:gravity="center_horizontal"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textColor="@android:color/black"
-        tools:text="cream cheese(softened)" />
+        tools:text="cream cheese"
+        />
 
     <TextView
         android:id="@+id/tv_measure"
@@ -26,7 +27,8 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textColor="@android:color/black"
         android:textStyle="bold"
-        tools:text="0Z" />
+        tools:text="G"
+        />
 
     <TextView
         android:id="@+id/tv_quantity"
@@ -37,6 +39,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textColor="@android:color/black"
         android:textStyle="bold"
-        tools:text="4" />
+        tools:text="2"
+        />
 
 </LinearLayout>

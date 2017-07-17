@@ -17,6 +17,18 @@ public class Step implements Parcelable {
             return new Step[size];
         }
     };
+    public Step()
+    {
+
+    }
+    protected Step(Parcel in) {
+        this.id = in.readInt();
+        this.shortDescription = in.readString();
+        this.description = in.readString();
+        this.videoUrl = in.readString();
+        this.thumbnailUrl = in.readString();
+    }
+
     @SerializedName("id")
     private int id;
     @SerializedName("shortDescription")
@@ -28,16 +40,7 @@ public class Step implements Parcelable {
     @SerializedName("thumbnailURL")
     private String thumbnailUrl;
 
-    public Step() {
-    }
 
-    protected Step(Parcel in) {
-        this.id = in.readInt();
-        this.shortDescription = in.readString();
-        this.description = in.readString();
-        this.videoUrl = in.readString();
-        this.thumbnailUrl = in.readString();
-    }
 
     public int getId() {
         return id;

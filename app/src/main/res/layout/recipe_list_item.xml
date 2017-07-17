@@ -5,9 +5,12 @@
     style="@style/CardView.Light"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp"
+    android:layout_margin="8dp"
     android:foreground="?android:selectableItemBackground"
-    app:cardPreventCornerOverlap="false">
+    app:cardPreventCornerOverlap="false"
+    android:padding="8dp"
+    android:elevation="2dp"
+    >
 
     <ImageView
         android:id="@+id/iv_recipe_image"
@@ -17,6 +20,7 @@
         android:contentDescription="@string/recipe_image" />
 
     <TextView
+
         android:id="@+id/tv_recipe_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

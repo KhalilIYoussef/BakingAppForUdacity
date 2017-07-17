@@ -5,16 +5,17 @@
     style="@style/CardView.Light"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp"
-    android:foreground="?android:selectableItemBackground"
-    app:cardPreventCornerOverlap="false">
+    android:layout_margin="8dp"
+    app:cardPreventCornerOverlap="false"
+    android:elevation="2dp">
 
 
     <TextView
         android:id="@+id/tv_ingredient_step"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textAlignment="center"
         android:layout_margin="@dimen/margin"
         android:textAppearance="@android:style/TextAppearance.Large"
-        tools:text="Recipe Introduction" />
+        tools:text="Ingredient / Step #" />
 </android.support.v7.widget.CardView>

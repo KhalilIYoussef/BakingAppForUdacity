@@ -26,7 +26,6 @@ import static khaliliyoussef.bakingappforudacity.adapter.RecipeAdapter.RECIPE;
 
 public class RecipeActivity extends AppCompatActivity {
 
-    private static final String TAG = RecipeActivity.class.getSimpleName();
     @BindView(R.id.rv_recipe)
     RecyclerView mRecipeRecyclerView;
     @BindView(R.id.progressBar)

@@ -3,10 +3,10 @@ package khaliliyoussef.bakingappforudacity.data;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -20,15 +20,15 @@ import static khaliliyoussef.bakingappforudacity.data.RecipeContract.RECIPE_CONT
 
 public class RecipeProvider extends ContentProvider
 {
-
+    private RecipeDbHelper mOpenHelper;
     public static final int CODE_RECIPE = 100;
     public static final int CODE_RECIPE_WITH_ID = 101;
-
+//if any Update happen to the Database use this string to identify the broadcast
     public static final String ACTION_DATA_UPDATED = "khaliliyoussef.bakingappforudacity.data.ACTION_DATA_UPDATED";
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
-    private RecipeDbHelper mOpenHelper;
+
 
     public static UriMatcher buildUriMatcher()
     {
@@ -99,7 +99,7 @@ public class RecipeProvider extends ContentProvider
                 if (id > 0) {
                     returnUri = ContentUris.withAppendedId(RECIPE_CONTENT_URI, id);
                 } else {
-                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                    throw new SQLException("Failed to insert row into " + uri);
                 }
                 break;
             case CODE_RECIPE:
@@ -107,14 +107,19 @@ public class RecipeProvider extends ContentProvider
                 if (id > 0) {
                     returnUri = ContentUris.withAppendedId(RECIPE_CONTENT_URI, id);
                 } else {
-                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                    throw new SQLException("Failed to insert row into " + uri);
                 }
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown Uri " + uri);
         }
         getContext().getContentResolver().notifyChange(uri, null);
-        updateWidgets();
+        //TODO when data changed then send a broadcast then use that to update the widget later
+        //Update the Widget with the data
+        // Setting the package ensures that only components in our app will receive the broadcast
+        Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED)
+                .setPackage(getContext().getPackageName());
+        getContext().sendBroadcast(dataUpdatedIntent);
 
         return returnUri;
     }
@@ -143,7 +148,12 @@ public class RecipeProvider extends ContentProvider
 
         if (numberOfDeletedIngredients != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
-            updateWidgets();
+            //Update The Widget and send a broadcast that the data has changed
+            // Setting the package ensures that only components in our app will receive the broadcast
+            Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED)
+                    .setPackage(getContext().getPackageName());
+            getContext().sendBroadcast(dataUpdatedIntent);
+
         }
         return numberOfDeletedIngredients;
     }
@@ -153,11 +163,4 @@ public class RecipeProvider extends ContentProvider
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    private void updateWidgets() {
-        Context context = getContext();
-        // Setting the package ensures that only components in our app will receive the broadcast
-        Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED)
-                .setPackage(context.getPackageName());
-        context.sendBroadcast(dataUpdatedIntent);
-    }
 }

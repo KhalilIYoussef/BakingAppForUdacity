@@ -9,15 +9,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-
 import java.util.ArrayList;
-
 import khaliliyoussef.bakingappforudacity.adapter.IngredientStepAdapter;
 import khaliliyoussef.bakingappforudacity.data.RecipeContract;
 import khaliliyoussef.bakingappforudacity.fragment.IngredientStepDetailFragment;
 import khaliliyoussef.bakingappforudacity.model.Ingredient;
 import khaliliyoussef.bakingappforudacity.model.Recipe;
-
 import static khaliliyoussef.bakingappforudacity.adapter.IngredientStepAdapter.INGREDIENTS;
 import static khaliliyoussef.bakingappforudacity.adapter.IngredientStepAdapter.STEPS;
 import static khaliliyoussef.bakingappforudacity.adapter.RecipeAdapter.RECIPE;
@@ -28,7 +25,7 @@ public class IngredientStepActivity extends AppCompatActivity implements Ingredi
 
 
     public static final String POSITION = "position";
-    public static final String PANES = "panes";
+    public static final String isTabKey = "isTabKey";
     private boolean isTablet;
     private Recipe mRecipe;
 
@@ -47,19 +44,21 @@ public class IngredientStepActivity extends AppCompatActivity implements Ingredi
     }
 /*
 * well the are four cases
-* 1-it's a tablet and
-* 2-it's a tablet and it isn't
-* 3-it's not a tablet and
-* 4-it's not a tablet and it isn't*/
+* 1-it's a tablet and he pressed the ingredient
+* 2-it's a tablet and he didn't pressed the ingredients (pressed the steps)
+* 3-it's not a tablet (it's a phone) and he pressed the ingredients
+* 4-it's not a tablet (it's a phone) and he didn't pressed the ingredients (pressed the steps)*/
     @Override
     public void onIngredientStepSelected(int position)
     {
+        //to parse it
         Bundle bundle = new Bundle();
+//position==0 means the first element in the list (the ingredients)
         if (isTablet && position == 0)
         {
             IngredientStepDetailFragment fragment = new IngredientStepDetailFragment();
             bundle.putInt(POSITION, position);
-            bundle.putBoolean(PANES, isTablet);
+            bundle.putBoolean(isTabKey, isTablet);
             bundle.putParcelableArrayList(INGREDIENTS, mRecipe.getIngredients());
             fragment.setArguments(bundle);
             getSupportFragmentManager().beginTransaction()
@@ -67,11 +66,12 @@ public class IngredientStepActivity extends AppCompatActivity implements Ingredi
                     .commit();
 
         }
+        //it's tablet and it's not in the ingredient
         else if (isTablet)
         {
             IngredientStepDetailFragment fragment = new IngredientStepDetailFragment();
             bundle.putInt(POSITION, position);
-            bundle.putBoolean(PANES, isTablet);
+            bundle.putBoolean(isTabKey, isTablet);
             bundle.putParcelableArrayList(STEPS, mRecipe.getSteps());
             fragment.setArguments(bundle);
             getSupportFragmentManager().beginTransaction()
@@ -81,7 +81,7 @@ public class IngredientStepActivity extends AppCompatActivity implements Ingredi
         else if (position == 0)
         {
             bundle.putInt(POSITION, position);
-            bundle.putBoolean(PANES, isTablet);
+            bundle.putBoolean(isTabKey, isTablet);
             bundle.putParcelableArrayList(INGREDIENTS, mRecipe.getIngredients());
             Intent intent = new Intent(this, IngredientStepDetailActivity.class);
             intent.putExtras(bundle);
@@ -90,7 +90,7 @@ public class IngredientStepActivity extends AppCompatActivity implements Ingredi
         else
             {
             bundle.putInt(POSITION, position);
-            bundle.putBoolean(PANES, isTablet);
+            bundle.putBoolean(isTabKey, isTablet);
             bundle.putParcelableArrayList(STEPS, mRecipe.getSteps());
             Intent intent = new Intent(this, IngredientStepDetailActivity.class);
             intent.putExtras(bundle);
@@ -106,7 +106,8 @@ public class IngredientStepActivity extends AppCompatActivity implements Ingredi
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
@@ -115,11 +116,11 @@ public class IngredientStepActivity extends AppCompatActivity implements Ingredi
                 if (isFavorite()) {
                     removeRecipeFromFavorites();
                     item.setIcon(R.drawable.ic_favorite_normal);
-                    Toast.makeText(this, String.format(getString(R.string.favorite_removed_message), mRecipe.getName()), Toast.LENGTH_LONG).show();
+                    Toast.makeText(this,getString(R.string.favorite_removed_message)+ mRecipe.getName(), Toast.LENGTH_LONG).show();
                 } else {
                     addRecipeToFavorites();
                     item.setIcon(R.drawable.ic_favorite_added);
-                    Toast.makeText(this, String.format(getString(R.string.favorite_added_message), mRecipe.getName()), Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, getString(R.string.favorite_added_message)+ mRecipe.getName(), Toast.LENGTH_LONG).show();
                 }
                 return true;
             default:
@@ -128,7 +129,8 @@ public class IngredientStepActivity extends AppCompatActivity implements Ingredi
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
+    public boolean onPrepareOptionsMenu(Menu menu)
+    {
         MenuItem menuItem = menu.findItem(R.id.action_favorite);
         if (isFavorite())
         {
@@ -147,7 +149,7 @@ public class IngredientStepActivity extends AppCompatActivity implements Ingredi
     private boolean isFavorite()
     {
 
-        //get all the recipes where its id equacl the current recipe if the return cursor is null then it's not fav
+        //get all the recipes where its "id" equal the current recipe if the return cursor is null then it's not fav
         //if the cursor is not null then it's favorite
         String[] projection = {RecipeEntry.COLUMN_RECIPE_ID};
         String selection = RecipeEntry.COLUMN_RECIPE_ID + " = " + mRecipe.getId();
@@ -168,15 +170,12 @@ public class IngredientStepActivity extends AppCompatActivity implements Ingredi
         getContentResolver().delete(RECIPE_CONTENT_URI, null, null);
     }
 
-    synchronized private void addRecipeToFavorites() {
-        getContentResolver().delete(RECIPE_CONTENT_URI, null, null);
-        saveIngredients(mRecipe.getIngredients());
-    }
-
-    private void saveIngredients(ArrayList<Ingredient> ingredients)
+    synchronized private void addRecipeToFavorites()
     {
+        //delete the old recipes (it can only save one recipe )
+        getContentResolver().delete(RECIPE_CONTENT_URI, null, null);
 //save every ingredient in the database with the recipe name and id
-        for (Ingredient ingredient : ingredients) {
+        for (Ingredient ingredient : mRecipe.getIngredients()) {
             ContentValues values = new ContentValues();
             values.put(RecipeContract.RecipeEntry.COLUMN_RECIPE_ID, mRecipe.getId());
             values.put(RecipeEntry.COLUMN_RECIPE_NAME, mRecipe.getName());
@@ -186,5 +185,8 @@ public class IngredientStepActivity extends AppCompatActivity implements Ingredi
             getContentResolver().insert(RECIPE_CONTENT_URI, values);
         }
     }
+
+
+
 
 }

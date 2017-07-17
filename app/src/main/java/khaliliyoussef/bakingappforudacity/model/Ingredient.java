@@ -7,7 +7,8 @@ import com.google.gson.annotations.SerializedName;
 
 public class Ingredient implements Parcelable
 {
-    public static final Creator<Ingredient> CREATOR = new Creator<Ingredient>() {
+    public static final Creator<Ingredient> CREATOR = new Creator<Ingredient>()
+    {
         @Override
         public Ingredient createFromParcel(Parcel source) {
             return new Ingredient(source);
@@ -73,12 +74,4 @@ public class Ingredient implements Parcelable
         dest.writeString(this.ingredient);
     }
 
-    @Override
-    public String toString() {
-        return "Ingredient{" +
-                "quantity=" + quantity +
-                ", measure='" + measure + '\'' +
-                ", ingredient='" + ingredient + '\'' +
-                '}';
-    }
 }

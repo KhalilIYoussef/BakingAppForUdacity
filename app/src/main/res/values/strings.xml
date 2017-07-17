@@ -1,4 +1,4 @@
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources >
     <string name="app_name">Baking App</string>
     <string name="title_activity_ingredient_step">Recipe Name</string>
     <string name="previous">Previous</string>
@@ -9,37 +9,27 @@
     <string name="ingredient">Ingredient</string>
     <string name="measure">Measure</string>
     <string name="quantity">Quantity</string>
-    <string name="end_of_steps">You\'ve reach the end of the tutorial! Enjoy</string>
-    <string name="start_of_steps">Back to the beginning! Ready to learn?</string>
+    <string name="end_of_steps">You have reach the end !</string>
+    <string name="start_of_steps">Back to the beginning!</string>
     <string name="pause">pause</string>
     <string name="play">play</string>
     <string name="restart">restart</string>
     <string name="error_drm_not_supported">Protected content not supported on API levels below 18</string>
-
     <string name="error_drm_unsupported_scheme">This device does not support the required DRM scheme</string>
-
     <string name="error_drm_unknown">An unknown DRM error occurred</string>
-
-    <string name="error_no_decoder">This device does not provide a decoder for <xliff:g id="mime_type">%1$s</xliff:g></string>
-
-    <string name="error_no_secure_decoder">This device does not provide a secure decoder for <xliff:g id="mime_type">%1$s</xliff:g></string>
-
+    <string name="error_no_decoder">This device does not provide a decoder </string>
+    <string name="error_no_secure_decoder">This device does not provide a secure decoder </string>
     <string name="error_querying_decoders">Unable to query device decoders</string>
-
-    <string name="error_instantiating_decoder">Unable to instantiate decoder <xliff:g id="decoder_name">%1$s</xliff:g></string>
-
+    <string name="error_instantiating_decoder">Unable to instantiate decoder </string>
     <string name="error_unsupported_video">Media includes video tracks, but none are playable by this device</string>
-
     <string name="error_unsupported_audio">Media includes audio tracks, but none are playable by this device</string>
-
     <string name="storage_permission_denied">Permission to access storage was denied</string>
-
     <string name="sample_list_load_error">One or more sample lists failed to load</string>
     <string name="action_favorite">add to favorite</string>
     <string name="add_widget">Add widget</string>
     <string name="empty_recipe_list">No Favorite Recipe Selected</string>
-    <string name="favorite_added_message">%s has been added as your favorite recipe!</string>
-    <string name="favorite_removed_message">%s has been removed as your favorite recipe</string>
+    <string name="favorite_added_message"> you added your favorite recipe!</string>
+    <string name="favorite_removed_message">you removed your favorite recipe!</string>
     <string name="recipe_thumbnail">Recipe thumbnail</string>
     <string name="recipe_image">Recipe Image</string>
 </resources>

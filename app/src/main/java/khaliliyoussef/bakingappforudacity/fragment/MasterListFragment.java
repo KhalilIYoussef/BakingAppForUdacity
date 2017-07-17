@@ -27,8 +27,9 @@ public class MasterListFragment extends Fragment
     private Recipe mRecipe;
     private IngredientStepAdapter mIngredientStepAdapter;
     private OnIngredientStepListener mClickListener;
-
-    public MasterListFragment() {
+//mandatory constructor for the fragment
+    public MasterListFragment()
+    {
     }
 
     @Override
@@ -37,8 +38,8 @@ public class MasterListFragment extends Fragment
         try {
             mClickListener = (OnIngredientStepListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString()
-                    + " must implement OnImageClickListener");
+            throw new ClassCastException(
+                    " must implement OnImageClickListener");
         }
     }
 
@@ -61,7 +62,7 @@ public class MasterListFragment extends Fragment
 
 
 
-    //if you are using the if savedInstanceStade!=null condition then it must be implemented
+    //if you are using the if savedInstanceState!=null condition then it must be implemented
     @Override
     public void onSaveInstanceState(Bundle outState)
     {

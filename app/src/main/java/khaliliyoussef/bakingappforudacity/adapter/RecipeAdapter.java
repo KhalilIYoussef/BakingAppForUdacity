@@ -19,6 +19,8 @@ import khaliliyoussef.bakingappforudacity.R;
 import khaliliyoussef.bakingappforudacity.model.Recipe;
 import khaliliyoussef.bakingappforudacity.activity.IngredientStepActivity;
 
+import static android.os.Build.VERSION.SDK;
+
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder> {
 
     public static final String RECIPE = "recipe";
@@ -43,6 +45,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
 
     @Override
     public void onBindViewHolder(final RecipeViewHolder holder, final int position) {
+       //check fo the orientation
         holder.setRecipeName(mRecipes.get(position).getName());
         holder.setRecipeImage(mContext, mRecipes.get(position).getImageUrl());
     }
