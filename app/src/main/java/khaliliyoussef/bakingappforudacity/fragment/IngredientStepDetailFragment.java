@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -66,8 +67,8 @@ public class IngredientStepDetailFragment extends Fragment implements ExoPlayer.
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
     //set it to false at first time running
     private boolean autoPlay = false;
-    private int currentWindow;
-    private long playbackPosition;
+    private  static int currentWindow;
+    private  static long playbackPosition;
     private TrackSelector trackSelector;
     
 
@@ -209,8 +210,8 @@ public class IngredientStepDetailFragment extends Fragment implements ExoPlayer.
             showStepsForPhone();
         }
 
-        playbackPosition=mExoPlayer.getCurrentPosition();
-        currentWindow=mExoPlayer.getCurrentWindowIndex();
+//        playbackPosition=mExoPlayer.getCurrentPosition();
+//        currentWindow=mExoPlayer.getCurrentWindowIndex();
     }
 
 
@@ -314,7 +315,8 @@ public class IngredientStepDetailFragment extends Fragment implements ExoPlayer.
     /**
      * Release ExoPlayer.
      */
-    private void releasePlayer() {
+    private void releasePlayer()
+    {
         if (mExoPlayer != null)
         {
             playbackPosition=mExoPlayer.getCurrentPosition();
@@ -324,14 +326,15 @@ public class IngredientStepDetailFragment extends Fragment implements ExoPlayer.
             mExoPlayer = null;
         }
     }
-
+// only above 4.1
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    private void hideSystemUi() {
+    private void hideSystemUi()
+    {
         View decorView = getActivity().getWindow().getDecorView();
         decorView.setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN //Full Screen
                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
                         | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                         | View.SYSTEM_UI_FLAG_IMMERSIVE);
@@ -381,7 +384,10 @@ public class IngredientStepDetailFragment extends Fragment implements ExoPlayer.
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        if ((playbackState == ExoPlayer.STATE_READY) && playWhenReady) {
+//            playbackPosition=mExoPlayer.getCurrentPosition();
+//            currentWindow=mExoPlayer.getCurrentWindowIndex();
+            if((playbackState == ExoPlayer.STATE_READY) && playWhenReady){
+
             Toast.makeText(getActivity(), "Playing", Toast.LENGTH_LONG).show();
         }
     }
@@ -423,11 +429,14 @@ public class IngredientStepDetailFragment extends Fragment implements ExoPlayer.
     }
 
     @Override
-    public void onPositionDiscontinuity() {
+    public void onPositionDiscontinuity()
+    {
     }
 
     @Override
-    public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+    public void onPlaybackParametersChanged(PlaybackParameters playbackParameters)
+    {
+
     }
 
 
