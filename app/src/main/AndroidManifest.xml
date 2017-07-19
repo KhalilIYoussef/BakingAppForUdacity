@@ -37,7 +37,7 @@
             android:authorities="khaliliyoussef.bakingappforudacity.data"
             android:exported="false" />
 
-        <receiver android:name=".widget.RecipeAppWidget">
+        <receiver android:name=".widget.RecipeAppWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="khaliliyoussef.bakingappforudacity.data.ACTION_DATA_UPDATED"/>

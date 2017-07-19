@@ -27,7 +27,7 @@
     <string name="sample_list_load_error">One or more sample lists failed to load</string>
     <string name="action_favorite">add to favorite</string>
     <string name="add_widget">Add widget</string>
-    <string name="empty_recipe_list">No Favorite Recipe Selected</string>
+    <string name="empty_recipe_list">No Favorite Recipe To Display</string>
     <string name="favorite_added_message"> you added your favorite recipe!</string>
     <string name="favorite_removed_message">you removed your favorite recipe!</string>
     <string name="recipe_thumbnail">Recipe thumbnail</string>

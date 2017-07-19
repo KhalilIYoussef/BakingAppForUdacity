@@ -5,9 +5,7 @@ import android.os.Binder;
 import android.support.v7.widget.RecyclerView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
-
 import khaliliyoussef.bakingappforudacity.R;
-
 import static khaliliyoussef.bakingappforudacity.data.RecipeContract.RECIPE_CONTENT_URI;
 import static khaliliyoussef.bakingappforudacity.data.RecipeContract.RecipeEntry.COLUMN_INGREDIENT_MEASURE;
 import static khaliliyoussef.bakingappforudacity.data.RecipeContract.RecipeEntry.COLUMN_INGREDIENT_NAME;
@@ -15,6 +13,10 @@ import static khaliliyoussef.bakingappforudacity.data.RecipeContract.RecipeEntry
 import static khaliliyoussef.bakingappforudacity.data.RecipeContract.RecipeEntry.COLUMN_RECIPE_ID;
 import static khaliliyoussef.bakingappforudacity.data.RecipeContract.RecipeEntry.COLUMN_RECIPE_NAME;
 
+/*
+* it's like an adapter but only to the widget and instead of onBindViewHolder there is getViewAt
+*
+* */
 // a class that extend RemoteViewsServices must implement onGetViewFactory
 public class RecipeWidgetRemoteViewsService extends RemoteViewsService {
     // these indices must match the projection
@@ -23,14 +25,15 @@ public class RecipeWidgetRemoteViewsService extends RemoteViewsService {
     static final int INDEX_INGREDIENT_NAME = 2;
     static final int INDEX_INGREDIENT_MEASURE = 3;
     static final int INDEX_INGREDIENT_QUANTITY = 4;
+
     private static final String[] RECIPE_COLUMNS =
-            {
-            COLUMN_RECIPE_ID,
-            COLUMN_RECIPE_NAME,
-            COLUMN_INGREDIENT_NAME,
-            COLUMN_INGREDIENT_MEASURE,
-            COLUMN_INGREDIENT_QUANTITY
-            };
+                             {
+                                        COLUMN_RECIPE_ID,
+                                        COLUMN_RECIPE_NAME,
+                                        COLUMN_INGREDIENT_NAME,
+                                        COLUMN_INGREDIENT_MEASURE,
+                                        COLUMN_INGREDIENT_QUANTITY
+                             };
 
 
 
@@ -38,7 +41,8 @@ public class RecipeWidgetRemoteViewsService extends RemoteViewsService {
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent)
     {
-        return new RemoteViewsFactory() {
+        return new RemoteViewsFactory()
+        {
             private Cursor data = null;
 
             @Override

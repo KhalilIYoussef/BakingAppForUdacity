@@ -84,42 +84,50 @@ public class IngredientStepDetailFragment extends Fragment implements ExoPlayer.
     private int mPosition;
     private boolean isTablet;
 
-
-    public IngredientStepDetailFragment() {
+//mandatory constructor
+    public IngredientStepDetailFragment()
+    {
     }
 
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+    {
 
-        if (savedInstanceState != null) {
+        if (savedInstanceState != null)
+        {
             mIngredients = savedInstanceState.getParcelableArrayList(INGREDIENTS);
             mSteps = savedInstanceState.getParcelableArrayList(STEPS);
             isTablet = savedInstanceState.getBoolean(isTabKey);
             mPosition = savedInstanceState.getInt(POSITION);
 
-            playbackPosition = savedInstanceState.getLong(PLAYBACK_POSITION, 0);
+            playbackPosition = savedInstanceState.getLong(PLAYBACK_POSITION);
 
-            currentWindow = savedInstanceState.getInt(CURRENT_WINDOW_INDEX, 0);
+            currentWindow = savedInstanceState.getInt(CURRENT_WINDOW_INDEX);
             autoPlay = savedInstanceState.getBoolean(AUTOPLAY, false);
         }
 
         View rootView = inflater.inflate(R.layout.fragment_ingredient_step_detail, container, false);
+        //bind the views
         ButterKnife.bind(this,rootView);
 
 
-        mPrevious.setOnClickListener(new View.OnClickListener() {
+        mPrevious.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 //clicking the previous button
-
+                //if he hasn't reached the beginning of the steps
                 if (mIndex > 0)
                 {
                     int index = --mIndex;
                     mDescription.setText(mSteps.get(index).getDescription());
                     playStepVideo(index);
-                } else {
+                }
+                else
+                    {
                     Toast.makeText(getActivity(), R.string.start_of_steps, Toast.LENGTH_LONG).show();
                 }
 
@@ -130,12 +138,15 @@ public class IngredientStepDetailFragment extends Fragment implements ExoPlayer.
             @Override
             public void onClick(View v) {
                 //clicking the next button
+                //if he hasn't reached the end of the steps
                 if (mIndex < mSteps.size() - 1)
                 {
                     int index = ++mIndex;
                     mDescription.setText(mSteps.get(index).getDescription());
                     playStepVideo(index);
-                } else {
+                }
+                else
+                    {
 
                     Toast.makeText(getActivity(), R.string.end_of_steps, Toast.LENGTH_LONG).show();
                 }
@@ -143,9 +154,11 @@ public class IngredientStepDetailFragment extends Fragment implements ExoPlayer.
             }
         });
 
+        //
         mPosition = getArguments().getInt(POSITION);
         mIndex = mPosition - 1;
         isTablet = getArguments().getBoolean(isTabKey);
+
 
 
         return rootView;
@@ -153,7 +166,8 @@ public class IngredientStepDetailFragment extends Fragment implements ExoPlayer.
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
-    public void onResume() {
+    public void onResume()
+    {
         super.onResume();
         //Case #1
         if (isTablet && mPosition == 0) {
@@ -194,14 +208,15 @@ public class IngredientStepDetailFragment extends Fragment implements ExoPlayer.
         {
             showStepsForPhone();
         }
+
+        playbackPosition=mExoPlayer.getCurrentPosition();
+        currentWindow=mExoPlayer.getCurrentWindowIndex();
     }
 
-    private void showIngredients() {
 
-    }
+    public void showStepsForTab()
+    {
 
-
-    public void showStepsForTab() {
         mIngredientsRecyclerView.setVisibility(View.GONE);
         mStepDetail.setVisibility(View.VISIBLE);
         mPlayerView.setVisibility(View.VISIBLE);
@@ -213,37 +228,38 @@ public class IngredientStepDetailFragment extends Fragment implements ExoPlayer.
     }
 
 
-    private void playStepVideo(int index) {
+    private void playStepVideo(int index)
+    {
         mPlayerView.setVisibility(View.VISIBLE);
         mPlayerView.requestFocus();
         String videoUrl = mSteps.get(index).getVideoUrl();
         String thumbNailUrl = mSteps.get(index).getThumbnailUrl();
-        if (!videoUrl.isEmpty()) {
+        if (!videoUrl.isEmpty())
+        {
             initializePlayer(Uri.parse(videoUrl));
-        } else if (!thumbNailUrl.isEmpty()) {
+        }
+        else if (!thumbNailUrl.isEmpty()) {
             initializePlayer(Uri.parse(thumbNailUrl));
-        } else {
+        }
+        else
+            {
             mPlayerView.setVisibility(View.GONE);
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    void isLandscape() {
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
-            hideSystemUi();
-    }
+
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void showStepsForPhone()
     {
         showStepsForTab();
-        isLandscape();
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
+                hideSystemUi();
         mPrevious.setVisibility(View.VISIBLE);
         mNext.setVisibility(View.VISIBLE);
     }
 
-    /**
-     * Initialize ExoPlayer.
+    /* Initialize ExoPlayer.
      * @param mediaUri The URI of the sample to play.
      * where the Uri is the link of the video
      */
@@ -254,8 +270,7 @@ public class IngredientStepDetailFragment extends Fragment implements ExoPlayer.
         DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(getActivity(),
                 null, DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF);
 
-        TrackSelection.Factory adaptiveTrackSelectionFactory =
-                new AdaptiveTrackSelection.Factory(BANDWIDTH_METER);
+        TrackSelection.Factory adaptiveTrackSelectionFactory = new AdaptiveTrackSelection.Factory(BANDWIDTH_METER);
 
         trackSelector = new DefaultTrackSelector(adaptiveTrackSelectionFactory);
         LoadControl loadControl = new DefaultLoadControl();
@@ -281,7 +296,8 @@ public class IngredientStepDetailFragment extends Fragment implements ExoPlayer.
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroy()
+    {
         super.onDestroy();
         releasePlayer();
     }
@@ -299,7 +315,10 @@ public class IngredientStepDetailFragment extends Fragment implements ExoPlayer.
      * Release ExoPlayer.
      */
     private void releasePlayer() {
-        if (mExoPlayer != null) {
+        if (mExoPlayer != null)
+        {
+            playbackPosition=mExoPlayer.getCurrentPosition();
+            currentWindow=mExoPlayer.getCurrentWindowIndex();
             mExoPlayer.stop();
             mExoPlayer.release();
             mExoPlayer = null;
@@ -318,7 +337,8 @@ public class IngredientStepDetailFragment extends Fragment implements ExoPlayer.
                         | View.SYSTEM_UI_FLAG_IMMERSIVE);
     }
 
-    private void showSystemUI() {
+    private void showSystemUI()
+    {
         View decorView = getActivity().getWindow().getDecorView();
         decorView.setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -328,13 +348,14 @@ public class IngredientStepDetailFragment extends Fragment implements ExoPlayer.
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(Bundle outState)
+    {
         if (mExoPlayer != null)
         {
             //this is because if you rotated the screen while it's playing
             outState.putLong(PLAYBACK_POSITION, playbackPosition);
-
             outState.putInt(CURRENT_WINDOW_INDEX, currentWindow);
+
             outState.putBoolean(AUTOPLAY, autoPlay);
         }
         outState.putParcelableArrayList(INGREDIENTS, mIngredients);
@@ -377,16 +398,23 @@ public class IngredientStepDetailFragment extends Fragment implements ExoPlayer.
                         (MediaCodecRenderer.DecoderInitializationException) cause;
                 if (decoderInitializationException.decoderName == null)
                 {
-                    if (decoderInitializationException.getCause() instanceof MediaCodecUtil.DecoderQueryException) {
+                    if (decoderInitializationException.getCause() instanceof MediaCodecUtil.DecoderQueryException)
+                    {
                         errorString = getString(R.string.error_querying_decoders);
-                    } else if (decoderInitializationException.secureDecoderRequired) {
-                        errorString = getString(R.string.error_no_secure_decoder);
-                    } else {
-                        errorString = getString(R.string.error_no_decoder);
                     }
-                } else {
-                    errorString = getString(R.string.error_instantiating_decoder);
+                    else if (decoderInitializationException.secureDecoderRequired)
+                    {
+                        errorString = getString(R.string.error_no_secure_decoder);
+                    }
+                    else
+                        {
+                        errorString = getString(R.string.error_no_decoder);
+                        }
                 }
+                else
+                    {
+                    errorString = getString(R.string.error_instantiating_decoder);
+                    }
             }
         }
         if (errorString != null) {
