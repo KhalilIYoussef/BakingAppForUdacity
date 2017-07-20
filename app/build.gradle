@@ -44,7 +44,6 @@ dependencies {
     //for binding the views
     compile 'com.jakewharton:butterknife:8.5.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
-
     //to create a card
     compile 'com.android.support:cardview-v7:25.2.0'
     //automatically generate the content provider
@@ -55,4 +54,5 @@ dependencies {
         exclude group: 'com.android.support', module: 'design'
         exclude group: 'com.android.support', module: 'recyclerview-v7'
     }
+    compile 'com.squareup.picasso:picasso:2.5.2'
 }

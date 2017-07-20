@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +44,7 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -75,6 +77,7 @@ public class IngredientStepDetailFragment extends Fragment implements ExoPlayer.
     @BindView(R.id.rv_ingredients) RecyclerView mIngredientsRecyclerView;
     @BindView(R.id.step_video) SimpleExoPlayerView mPlayerView;
     @BindView(R.id.tv_description) TextView mDescription;
+    @BindView(R.id.iv_thumbnail) ImageView  imageView;
     @BindView(R.id.bt_previous) Button mPrevious;
     @BindView(R.id.bt_next) Button mNext;
     @BindView(R.id.step_detail_view) View mStepDetail;
@@ -239,8 +242,13 @@ public class IngredientStepDetailFragment extends Fragment implements ExoPlayer.
         {
             initializePlayer(Uri.parse(videoUrl));
         }
-        else if (!thumbNailUrl.isEmpty()) {
-            initializePlayer(Uri.parse(thumbNailUrl));
+        else if (!thumbNailUrl.isEmpty())
+        {
+            Picasso.with(getContext())
+                    .load(Uri.parse(thumbNailUrl))
+                    .error(R.mipmap.ic_launcher).into(imageView);
+            imageView.setVisibility(View.VISIBLE);
+
         }
         else
             {
